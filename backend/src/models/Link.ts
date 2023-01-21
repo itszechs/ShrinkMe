@@ -8,6 +8,6 @@ export interface Link {
 }
 
 export const linkSchema = Joi.object({
-    shortenUrl: Joi.string().pattern(/^[a-zA-Z]+$/).required(),
+    shortenUrl: Joi.string().pattern(/^[a-z]+$/).required(),
     originalUrl: Joi.string().required(),
 });
