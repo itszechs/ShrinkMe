@@ -1,5 +1,9 @@
+import "./HomePage.css";
+
 export default function HomePage() {
     return (
-        <div>HomePage</div>
+        <div className="home-page">
+            HomePage
+        </div>
     );
 }
