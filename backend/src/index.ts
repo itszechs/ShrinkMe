@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import express, { Request, Response, NextFunction } from "express";
 import { connectToDatabase } from "./services/database";
 import { linksRouter } from "./routes/links";
+import { redirectRouter } from "./routes/redirect";
 
 // Load environment variables from the .env file, where the ATLAS_URI is configured
 dotenv.config();
@@ -28,7 +29,11 @@ connectToDatabase(ATLAS_URI)
             });
         });
 
+        // Links routes
         app.use("/api/v1/links", linksRouter);
+
+        // Redirect route
+        app.use("/", redirectRouter);
 
         // Invalid route message
         app.use((_req: Request, res: Response, _next: NextFunction) => {
