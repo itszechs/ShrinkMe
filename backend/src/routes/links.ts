@@ -1,7 +1,8 @@
 import express, { Request, Response, Router } from "express";
 import { ObjectId } from "mongodb";
 import { collections } from "../services/database";
-import { linkSchema } from "../models/Link";
+import { Link, linkSchema } from "../models/Link";
+import { generateShortenLink } from "../utils/link-generator";
 
 export const linksRouter = Router();
 linksRouter.use(express.json());
@@ -49,27 +50,45 @@ linksRouter.get("/:id", async (req: Request, res: Response) => {
 */
 linksRouter.post("/", async (req: Request, res: Response) => {
     try {
-        const link = req.body;
-        const { error } = linkSchema.validate(link);
+        const { error } = linkSchema.validate(req.body);
         if (error) {
             res.status(400).send({ message: "Invalid link body" });
             return;
         }
 
-        const existingLink = await collections.links.findOne({
-            shortenUrl: link.shortenUrl
-        });
-        if (existingLink) {
-            res.status(400).send({ message: "Shorten link already exists" });
-            return;
+        const link: Link = req.body
+        let generatedShortenUrl: string = ""
+
+        if (link.shortenUrl === undefined) {
+            const links = await collections.links.find({}).toArray();
+            generatedShortenUrl = generateShortenLink(links);
+        } else {
+            const existingLink = await collections.links.findOne({
+                shortenUrl: link.shortenUrl
+            });
+            if (existingLink) {
+                res.status(400).send({ message: "Shorten link already exists" });
+                return;
+            }
+            generatedShortenUrl = link.shortenUrl
         }
 
-        const result = await collections.links.insertOne(link);
+        if (generatedShortenUrl === null || generatedShortenUrl === "") {
+            res.status(500).send({ message: "Failed to create shorten link" });
+            return;
+        }
+        
+        const result = await collections.links.insertOne(
+            {
+                shortenUrl: generatedShortenUrl,
+                originalUrl: link.originalUrl
+            }
+        );
 
         if (result.acknowledged) {
-            res.status(201).send({ message: "New link created" });
+            res.status(201).send({ message: generatedShortenUrl });
         } else {
-            res.status(500).send({ message: "Failed to create a new link." });
+            res.status(500).send({ message: "Failed to create shorten link" });
         }
     } catch (error) {
         res.status(500).send({ error: error.message });
