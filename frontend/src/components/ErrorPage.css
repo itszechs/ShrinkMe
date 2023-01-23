@@ -1,4 +1,4 @@
-.error-page{
+.error-page {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -7,4 +7,21 @@
     width: 100vw;
     background-color: #121212;
     color: #f9fafc;
+    padding: 8%;
+}
+
+.header {
+    font-weight: 1000;
+    font-size: 100px;
+}
+
+.content {
+    font-weight: 700;
+    font-size: 25px;
+}
+
+.description {
+    font-weight: 400;
+    font-size: 16px;
+    margin-top: 12px;
 }
