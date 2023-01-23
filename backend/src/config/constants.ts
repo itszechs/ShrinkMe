@@ -1,0 +1,1 @@
+export const SHORTEN_LINK_LENGTH: number = 10;
