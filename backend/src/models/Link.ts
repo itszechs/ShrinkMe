@@ -9,5 +9,5 @@ export interface Link {
 
 export const linkSchema = Joi.object({
     shortenUrl: Joi.string().pattern(/^[a-z_\-]+$/).optional(),
-    originalUrl: Joi.string().required(),
+    originalUrl: Joi.string().pattern(/^(http|https):\/\//).required(),
 });
