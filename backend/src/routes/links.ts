@@ -57,10 +57,23 @@ linksRouter.post("/", async (req: Request, res: Response) => {
         }
 
         const link: Link = req.body
+        const links = await collections.links.find({}).toArray();
+
+        const existingLink = await collections.links.findOne({
+            originalUrl: link.originalUrl
+        });
+
+        // if link has already been shortened, and shortenUrl is not provided,
+        // return the existing shortenUrl
+        // otherwise, allow custom shortenUrl
+        if (existingLink && link.shortenUrl !== undefined) {
+            res.status(200).send({ message: existingLink.shortenUrl });
+            return;
+        }
+
         let generatedShortenUrl: string = ""
 
         if (link.shortenUrl === undefined) {
-            const links = await collections.links.find({}).toArray();
             generatedShortenUrl = generateShortenLink(links);
         } else {
             const existingLink = await collections.links.findOne({
@@ -77,7 +90,7 @@ linksRouter.post("/", async (req: Request, res: Response) => {
             res.status(500).send({ message: "Failed to create shorten link" });
             return;
         }
-        
+
         const result = await collections.links.insertOne(
             {
                 shortenUrl: generatedShortenUrl,
