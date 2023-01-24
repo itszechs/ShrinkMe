@@ -1,0 +1,80 @@
+.home-page {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+    background-color: #121212;
+    color: #f9fafc;
+}
+
+.input-group {
+    width: 55vw;
+    height: 7vh;
+}
+
+.input-field {
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
+}
+
+.form-control:focus {
+    box-shadow: none;
+}
+
+.btn {
+    background-color: #9575cd;
+    color: #202020;
+    border-color: none;
+    box-shadow: none;
+    outline: 0px;
+}
+
+.btn:focus,
+.btn:hover,
+.btn:active {
+    background-color: #7E57C2;
+    color: #202020;
+    border-color: none;
+    box-shadow: none;
+    outline: 0px;
+}
+
+.shorten-button {
+    padding-left: 24px;
+    padding-right: 24px;
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+
+.output-section {
+    display: flex;
+    /* causes issues for responsive layout */
+    /* width: 25vw; */
+    height: 7vh;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: stretch;
+    margin-top: 24px;
+}
+
+.output-field {
+    padding-right: 12px;
+}
+
+.output-container {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    background-color: #252525;
+    border-radius: 12px;
+}
+
+.copy-button {
+    padding-left: 16px;
+    padding-right: 16px;
+    margin-left: 8px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
