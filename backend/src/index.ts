@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+import cors from "cors";
 
 import express, { Request, Response, NextFunction } from "express";
 import { connectToDatabase } from "./services/database";
@@ -17,6 +18,7 @@ if (!ATLAS_URI) {
 connectToDatabase(ATLAS_URI)
     .then(() => {
         const app = express();
+        app.use(cors());
 
         app.listen(5500, () => {
             console.log(`Server running at http://localhost:5500`);
