@@ -39,6 +39,10 @@ export default function HomePage() {
         });
     }
 
+    const copyOutput = () => {
+        navigator.clipboard.writeText(output);
+    };
+
     return (
         <div className="home-page">
             <InputGroup className="input-group">
@@ -60,7 +64,7 @@ export default function HomePage() {
                 <div className="output-container">
                     <span className="output-field">{output}</span>
                 </div>
-                <Button className="btn copy-button">
+                <Button className="btn copy-button" onClick={copyOutput} >
                     <img src={copyIcon} />
                 </Button>
             </div>
