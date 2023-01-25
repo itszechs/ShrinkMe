@@ -33,7 +33,9 @@ export default function HomePage() {
             if (res.ok) {
                 return res.json();
             }
-            throw new Error(res.statusText);
+            res.json().then((data) => {
+                throw new Error(data.message);
+            });
         }).then((response) => {
             setOutput(`${api.base}/${response.message}`);
             setLoading(false);
