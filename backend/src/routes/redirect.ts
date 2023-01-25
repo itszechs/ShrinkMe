@@ -1,5 +1,6 @@
 import express, { Request, Response, Router } from "express";
 import { collections } from "../services/database";
+import { WEBSITE_URL } from "../config/constants";
 
 export const redirectRouter = Router();
 redirectRouter.use(express.json());
@@ -13,6 +14,7 @@ redirectRouter.get("/:shortenUrl", async (req: Request, res: Response) => {
         if (link) {
             res.redirect(link.originalUrl);
         } else {
+            res.redirect(`${WEBSITE_URL}/not-found`)
             res.status(404).send({ message: "Link does not exist" });
         }
 
