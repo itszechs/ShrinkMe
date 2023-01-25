@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Input, InputGroup, Button } from 'reactstrap';
+import { Input, InputGroup, Button, Fade } from 'reactstrap';
 import copyIcon from ".././images/icon-copy.svg";
 import LoadingBar from "./LoadingBar";
 import "./HomePage.css";
@@ -66,6 +66,7 @@ export default function HomePage() {
             </InputGroup>
             <div className="output-section">
                 {(loading) ? (<LoadingBar />) : (
+                <Fade tag="div">
                     <div className="output-section">
                         <div className="output-container">
                             <span className="output-field">{output}</span>
@@ -74,6 +75,7 @@ export default function HomePage() {
                             <img src={copyIcon} />
                         </Button>
                     </div>
+                </Fade>
                 )}
             </div>
         </div>
