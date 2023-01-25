@@ -15,7 +15,6 @@ redirectRouter.get("/:shortenUrl", async (req: Request, res: Response) => {
             res.redirect(link.originalUrl);
         } else {
             res.redirect(`${WEBSITE_URL}/not-found`)
-            res.status(404).send({ message: "Link does not exist" });
         }
 
     } catch (error) {
