@@ -1,0 +1,33 @@
+.loading {
+    width: 300px;
+    height: 8px;
+    margin-top : 24px;
+    border: 1px solid none;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.loading-background {
+    background: #673AB7;
+}
+
+.progress {
+    height: 8px;
+    width: 48px;
+    background: #9575CD;
+    border-radius: 24px;
+    animation: 1s infinite progressAnimation;
+    animation-timing-function: linear;
+}
+
+@keyframes progressAnimation {
+    from {
+        transform: translateX(0%);
+        width: 0px;
+    }
+
+    to {
+        transform: translateX(425%);
+        width: 72px;
+    }
+}
