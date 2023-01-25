@@ -33,14 +33,14 @@ export default function HomePage() {
             if (res.ok) {
                 return res.json();
             }
-            res.json().then((data) => {
-                throw new Error(data.message);
-            });
+            return Promise.reject(res);
         }).then((response) => {
             setOutput(`${api.base}/${response.message}`);
             setLoading(false);
         }).catch(err => {
-            setOutput(err.message);
+            err.json().then((error: any) => {
+                setOutput(error.message);
+            });
             setLoading(false);
         });
     }
@@ -68,16 +68,16 @@ export default function HomePage() {
             </InputGroup>
             <div className="output-section">
                 {(loading) ? (<LoadingBar />) : (
-                <Fade tag="div">
-                    <div className="output-section">
-                        <div className="output-container">
-                            <span className="output-field">{output}</span>
+                    <Fade tag="div">
+                        <div className="output-section">
+                            <div className="output-container">
+                                <span className="output-field">{output}</span>
+                            </div>
+                            <Button className="btn copy-button" onClick={copyOutput} >
+                                <img src={copyIcon} />
+                            </Button>
                         </div>
-                        <Button className="btn copy-button" onClick={copyOutput} >
-                            <img src={copyIcon} />
-                        </Button>
-                    </div>
-                </Fade>
+                    </Fade>
                 )}
             </div>
         </div>
