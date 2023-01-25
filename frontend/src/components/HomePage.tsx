@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Input, InputGroup, Button } from 'reactstrap';
 import copyIcon from ".././images/icon-copy.svg";
+import LoadingBar from "./LoadingBar";
 import "./HomePage.css";
 
 const api = {
@@ -12,13 +13,14 @@ export default function HomePage() {
 
     const [query, setQuery] = useState<string>("");
     const [output, setOutput] = useState<string>("Your shortened link will appear here");
+    const [loading, setLoading] = useState<boolean>(false);
 
     const generateLink = () => {
         if (query === "") {
             setOutput("Please enter a link");
             return;
         }
-
+        setLoading(true);
         fetch(`${api.base}${api.links}`, {
             method: "POST",
             headers: {
@@ -34,8 +36,10 @@ export default function HomePage() {
             throw new Error(res.statusText);
         }).then((response) => {
             setOutput(`${api.base}/${response.message}`);
+            setLoading(false);
         }).catch(err => {
             setOutput(err.message);
+            setLoading(false);
         });
     }
 
@@ -61,12 +65,16 @@ export default function HomePage() {
                 </Button>
             </InputGroup>
             <div className="output-section">
-                <div className="output-container">
-                    <span className="output-field">{output}</span>
-                </div>
-                <Button className="btn copy-button" onClick={copyOutput} >
-                    <img src={copyIcon} />
-                </Button>
+                {(loading) ? (<LoadingBar />) : (
+                    <div className="output-section">
+                        <div className="output-container">
+                            <span className="output-field">{output}</span>
+                        </div>
+                        <Button className="btn copy-button" onClick={copyOutput} >
+                            <img src={copyIcon} />
+                        </Button>
+                    </div>
+                )}
             </div>
         </div>
     );
