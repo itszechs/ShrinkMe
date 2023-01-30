@@ -66,7 +66,7 @@ linksRouter.post("/", async (req: Request, res: Response) => {
         // if link has already been shortened, and shortenUrl is not provided,
         // return the existing shortenUrl
         // otherwise, allow custom shortenUrl
-        if (existingLink && link.shortenUrl !== undefined) {
+        if (existingLink && link.shortenUrl === undefined) {
             res.status(200).send({ message: existingLink.shortenUrl });
             return;
         }
