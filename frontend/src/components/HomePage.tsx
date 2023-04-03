@@ -5,8 +5,7 @@ import LoadingBar from "./LoadingBar";
 import "./HomePage.css";
 
 const api = {
-    base: "https://shrinkme.vercel.app",
-    links: "/api/v1/links"
+    links: "/api/api/v1/links"
 }
 
 export default function HomePage() {
@@ -21,7 +20,7 @@ export default function HomePage() {
             return;
         }
         setLoading(true);
-        fetch(`${api.base}${api.links}`, {
+        fetch(api.links, {
             method: "POST",
             headers: {
                 "Content-type": "application/json"
@@ -35,7 +34,8 @@ export default function HomePage() {
             }
             return Promise.reject(res);
         }).then((response) => {
-            setOutput(`${api.base}/${response.message}`);
+            const baseUrl = new URL(window.location.href);
+            setOutput(`${baseUrl}/${response.message}`);
             setLoading(false);
         }).catch(err => {
             err.json().then((error: any) => {
