@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import jwt, { decode } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 
 const { sign, verify } = jwt;
 
@@ -31,25 +31,11 @@ export const generateJwt = (user: UserPayload) => {
   return token;
 }
 
-
-const decodeJwt = (token: string) => {
-  try {
-    var decoded = decode(token, { complete: true });
-    return decoded;
-  } catch (err) {
-    return null;
-  }
-};
-
 export const validateJwt = (token: string) => {
   try {
-    verify(token, secretKey);
-    console.log("verify success");
-
-    return decodeJwt(token);
+    return verify(token, secretKey);
   } catch (err) {
-    console.log("verify null");
-
+    console.log(`validateJwt: ${err}`);
     return null;
   }
 };
