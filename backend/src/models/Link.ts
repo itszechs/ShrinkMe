@@ -4,6 +4,8 @@ import Joi from "joi";
 export interface Link {
     shortenUrl: string;
     originalUrl: string;
+    userId?: string,
+    username?: string
     _id?: ObjectId;
 }
 
