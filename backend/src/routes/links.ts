@@ -1,8 +1,10 @@
 import express, { Request, Response, Router } from "express";
-import { ObjectId } from "mongodb";
+import { InsertOneResult, ObjectId, UpdateResult } from "mongodb";
 import { collections } from "../services/database";
 import { Link, linkSchema } from "../models/Link";
 import { generateShortenLink } from "../utils/link-generator";
+import { validateHeader } from "../utils/validate-headers";
+import { validateJwt } from "../utils/jwt-provider";
 
 export const linksRouter = Router();
 linksRouter.use(express.json());
@@ -11,9 +13,14 @@ linksRouter.use(express.json());
     * GET /links
     * Returns all links in the database
 */
-linksRouter.get("/", async (_req: Request, res: Response) => {
+linksRouter.get("/", [validateHeader], async (req: any, res: Response) => {
     try {
-        const links = await collections.links.find({}).toArray();
+        const userId = req.userId;
+        if (!userId) {
+            res.status(400).send({ message: "Invalid user" });
+            return;
+        }
+        const links = await collections.links.find({ userId: userId }).toArray();
         res.status(200).send(links);
     } catch (error) {
         res.status(500).send({ error: error.message });
@@ -25,10 +32,15 @@ linksRouter.get("/", async (_req: Request, res: Response) => {
     * Returns a single link by ID
     * Returns 404 if the link is not found
 */
-linksRouter.get("/:id", async (req: Request, res: Response) => {
+linksRouter.get("/:id", [validateHeader], async (req: any, res: Response) => {
     try {
+        if (!req.userId) {
+            res.status(400).send({ message: "Invalid user" });
+            return;
+        }
+        
         const id = req?.params?.id;
-        const query = { _id: new ObjectId(id) };
+        const query = { _id: new ObjectId(id), userId: req.userId };
         const link = await collections.links.findOne(query);
 
         if (link) {
@@ -91,13 +103,37 @@ linksRouter.post("/", async (req: Request, res: Response) => {
             return;
         }
 
-        const result = await collections.links.insertOne(
-            {
-                shortenUrl: generatedShortenUrl,
-                originalUrl: link.originalUrl
-            }
-        );
+        const bearerToken = req.header("Authorization");
+        let result: InsertOneResult<Link>
 
+        if (bearerToken) {
+            try {
+                const token = bearerToken.split(" ")[1];
+                const payload = validateJwt(token);
+                const userId = payload["id"];
+                const username = payload["username"];
+                result = await collections.links.insertOne(
+                    {
+                        userId: userId,
+                        username: username,
+                        shortenUrl: generatedShortenUrl,
+                        originalUrl: link.originalUrl
+                    }
+                );
+            } catch (err) {
+                console.error(err);
+                res.status(401).send({
+                    error: "Invalid Authorization Header",
+                });
+            }
+        } else {
+            result = await collections.links.insertOne(
+                {
+                    shortenUrl: generatedShortenUrl,
+                    originalUrl: link.originalUrl
+                }
+            );
+        }
         if (result.acknowledged) {
             res.status(201).send({ message: generatedShortenUrl });
         } else {
@@ -119,6 +155,7 @@ linksRouter.put("/:id", async (req: Request, res: Response) => {
     try {
         const id = req?.params?.id;
         const link = req.body;
+        const bearerToken = req.header("Authorization");
         const { error } = linkSchema.validate(link);
 
         if (error) {
@@ -126,24 +163,91 @@ linksRouter.put("/:id", async (req: Request, res: Response) => {
             return;
         }
 
-        const existingLink = await collections.links.findOne({
-            shortenUrl: link.shortenUrl
-        });
+        // Find the link by ID
+        const existingLink = await collections.links.findOne(
+            { _id: new ObjectId(id) }
+        );
 
-        if (existingLink) {
-            res.status(400).send({ message: "Shorten link already exists" });
+        // If the link is not found, return 404
+        if (!existingLink) {
+            res.status(404).send({ message: "Link does not exist" });
             return;
         }
 
-        const query = { _id: new ObjectId(id) };
-        const result = await collections.links.updateOne(query, { $set: link });
+        // Find shorten link by shortenUrl
+        const existingShortenLink = await collections.links.findOne(
+            { shortenUrl: link.shortenUrl }
+        );
 
-        if (result && result.matchedCount) {
-            res.status(200).send({ message: "Updated an link" });
-        } else if (!result.matchedCount) {
-            res.status(404).send({ message: "Failed to find link" });
+        // helper function to send response for "update"
+        function handleSuccessResponse(_result: UpdateResult) {
+            if (_result && _result.matchedCount) {
+                res.status(200).send({ message: "Updated an link" });
+            } else if (!_result.matchedCount) {
+                res.status(404).send({ message: "Failed to find link" });
+            } else {
+                res.status(304).send({ message: "Failed to update link" });
+            }
+        }
+
+        // If the link is found, and is public
+        if (!existingLink.userId) {
+            // Check if request shortenLink is already in use
+            if (existingShortenLink) {
+                res.status(400).send({ message: "Shorten link already exists" });
+                return;
+            }
+            // Update the link
+            const result = await collections.links.updateOne(
+                { _id: new ObjectId(id) },
+                {
+                    $set: {
+                        originalUrl: link.originalUrl,
+                        shortenUrl: link.shortenUrl
+                    }
+                }
+            );
+            handleSuccessResponse(result);
         } else {
-            res.status(304).send({ message: "Failed to update link" });
+            // If the link is found, and is private
+            if (!bearerToken) {
+                res.status(401).send({ message: "Unauthorized" });
+                return;
+            }
+            try {
+                const token = bearerToken.split(" ")[1];
+                const payload = validateJwt(token);
+                const userId = payload["id"];
+
+                // Check if the user is the owner of the link
+                if (userId !== existingLink.userId) {
+                    res.status(401).send({ message: "Unauthorized" });
+                    return;
+                }
+
+                // Check if request shortenLink is already in use
+                if (existingShortenLink) {
+                    res.status(400).send({ message: "Shorten link already exists" });
+                    return;
+                }
+
+                // Update the link
+                const result = await collections.links.updateOne(
+                    { _id: new ObjectId(id) },
+                    {
+                        $set: {
+                            originalUrl: link.originalUrl,
+                            shortenUrl: link.shortenUrl
+                        }
+                    }
+                );
+                handleSuccessResponse(result);
+            } catch (err) {
+                console.error(err);
+                res.status(401).send({
+                    error: "Invalid Authorization Header",
+                });
+            }
         }
     } catch (error) {
         res.status(500).send({ error: error.message });
@@ -156,10 +260,25 @@ linksRouter.put("/:id", async (req: Request, res: Response) => {
     * Returns 202 if the link is deleted
     * Returns 404 if the link is not found
 */
-linksRouter.delete("/:id", async (req: Request, res: Response) => {
+linksRouter.delete("/:id", [validateHeader], async (req: any, res: Response) => {
     try {
         const id = req?.params?.id;
         const query = { _id: new ObjectId(id) };
+
+        // Find the link by ID
+        const existingLink = await collections.links.findOne(query);
+
+        if (!existingLink) {
+            res.status(404).send({ message: "Link does not exist" });
+            return;
+        }
+
+        // Check if the user is the owner of the link
+        if (req.userId !== existingLink.userId) {
+            res.status(401).send({ message: "Unauthorized" });
+            return;
+        }
+
         const result = await collections.links.deleteOne(query);
 
         if (result && result.deletedCount) {

@@ -5,6 +5,7 @@ import express, { Request, Response, NextFunction } from "express";
 import { connectToDatabase } from "./services/database";
 import { linksRouter } from "./routes/links";
 import { redirectRouter } from "./routes/redirect";
+import { authRouter } from "./routes/auth";
 
 // Load environment variables from the .env file, where the ATLAS_URI is configured
 dotenv.config();
@@ -31,6 +32,9 @@ connectToDatabase(ATLAS_URI)
             });
         });
 
+        // Auth routes
+        app.use("/api/v1/auth", authRouter);
+        
         // Links routes
         app.use("/api/v1/links", linksRouter);
 
