@@ -1,8 +1,10 @@
 import { MongoClient, Collection, MongoServerError, Db } from "mongodb";
 import { Link } from "../models/Link";
+import { Account } from "../models/Account";
 
 export const collections: {
     links?: Collection<Link>;
+    accounts?: Collection<Account>;
 } = {};
 
 export async function connectToDatabase(uri: string) {
@@ -14,6 +16,9 @@ export async function connectToDatabase(uri: string) {
 
     const linksCollection = db.collection<Link>("links");
     collections.links = linksCollection;
+
+    const accountsCollection = db.collection<Account>("accounts");
+    collections.accounts = accountsCollection;
 }
 
 // Update our existing collection with JSON schema validation so we know our documents will always match the shape of our Employee model, even if added elsewhere.
