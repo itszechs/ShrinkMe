@@ -1,0 +1,33 @@
+.nav-bar {
+    padding: 1%;
+    position: absolute;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100vw;
+}
+
+.nav-btn {
+    background: -webkit-linear-gradient(left, #202020, #1b1b1b, #121212);
+    border: none;
+    color: #f9fafc;
+    margin-left: 2px;
+    margin-right: 2px;
+    border-radius: 24px;
+    padding-left: 16px;
+    padding-right: 16px;
+    transition: all 0.20s ease-in;
+}
+
+.nav-btn:active,
+.nav-btn:focus,
+.nav-btn:hover {
+    background: -webkit-linear-gradient(left, #9575cd, #7E57C2, #7E57C2);
+    transition: all 0.25s ease-out;
+}
+
+.app-name {
+    margin: 0;
+    margin-left: 8px;
+}
