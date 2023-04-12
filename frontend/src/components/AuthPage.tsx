@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 import "./AuthPage.css";
+import { api } from "../utils/constants";
 
 export interface AlertModalProps {
     title: string,
@@ -14,6 +15,7 @@ enum FormState {
 }
 
 export default function AuthPage() {
+    const [loading, setLoading] = useState<boolean>(false);
     const [loginShowPassword, setLoginShowPassword] = useState<boolean>(false);
     const [signupShowPassword, setSignupShowPassword] = useState<boolean>(false);
     const [formState, setFormState] = useState(FormState.SIGNUP);
@@ -167,6 +169,38 @@ export default function AuthPage() {
             return;
         }
 
+        fetch(api.buildUrl(api.signup), {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                firstName: firstName,
+                lastName: lastName,
+                username: username,
+                password: password
+            })
+        }).then(res => {
+            if (res.status === 201) {
+                return res.json();
+            }
+            return Promise.reject(res);
+        }).then((response) => {
+            let token = response.message;
+            localStorage.setItem("token", token);
+            window.location.href = "/";
+            setLoading(false);
+        }).catch(err => {
+            err.json().then((error: any) => {
+                setAlertModalProps({
+                    title: "Failed to signup",
+                    message: error.message
+                })
+                setAlertModal(true);
+            });
+            setLoading(false);
+        });
+
     }
 
     const login = () => {
@@ -186,8 +220,35 @@ export default function AuthPage() {
             return;
         }
 
-        console.log("can login")
-
+        fetch(api.buildUrl(api.login), {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                username: username,
+                password: password
+            })
+        }).then(res => {
+            if (res.ok) {
+                return res.json();
+            }
+            return Promise.reject(res);
+        }).then((response) => {
+            let token = response.message;
+            localStorage.setItem("token", token);
+            window.location.href = "/";
+            setLoading(false);
+        }).catch(err => {
+            err.json().then((error: any) => {
+                setAlertModalProps({
+                    title: "Failed to login",
+                    message: error.message
+                })
+                setAlertModal(true);
+            });
+            setLoading(false);
+        });
     }
 
     return (
