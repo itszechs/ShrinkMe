@@ -2,12 +2,9 @@ import { useState } from 'react';
 import { Input, InputGroup, Button, Fade } from 'reactstrap';
 import copyIcon from ".././images/icon-copy.svg";
 import LoadingBar from "./LoadingBar";
+import { api } from "../utils/constants";
 import "./HomePage.css";
 
-const api = {
-    base: "https://shrinkme.vercel.app",
-    links: "/api/v1/links"
-}
 
 export default function HomePage() {
 
@@ -51,6 +48,10 @@ export default function HomePage() {
 
     return (
         <div className="home-page">
+            <div className="heading">
+                <span className="tagline">ShrinkMe - Shorten your links, expand your reach!</span>
+                <span className="tagline sub">Shorten, simplify and track your links with ease!</span>
+            </div>
             <InputGroup className="input-group">
                 <Input
                     className="form-control input-field"
@@ -74,7 +75,7 @@ export default function HomePage() {
                                 <span className="output-field">{output}</span>
                             </div>
                             <Button className="btn copy-button" onClick={copyOutput} >
-                                <img src={copyIcon} />
+                                <img src={copyIcon} alt="" />
                             </Button>
                         </div>
                     </Fade>
