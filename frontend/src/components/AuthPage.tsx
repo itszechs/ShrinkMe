@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Modal, ModalHeader, ModalBody, ModalFooter, Spinner } from 'reactstrap';
 
 import "./AuthPage.css";
 import { api } from "../utils/constants";
@@ -81,10 +81,12 @@ export default function AuthPage() {
 
 
     const handleSignupClick = () => {
+        if (loading) return;
         setFormState(FormState.SIGNUP);
     };
 
     const handleLoginClick = () => {
+        if (loading) return;
         setFormState(FormState.LOGIN);
     };
 
@@ -126,6 +128,8 @@ export default function AuthPage() {
 
 
     const signup = () => {
+        if (loading) return;
+
         const firstName = (document.getElementById("firstName") as HTMLInputElement).value;
         const lastName = (document.getElementById("lastName") as HTMLInputElement).value;
         const username = (document.getElementById("signupUsername") as HTMLInputElement).value;
@@ -169,6 +173,8 @@ export default function AuthPage() {
             return;
         }
 
+        setLoading(true);
+
         fetch(api.buildUrl(api.signup), {
             method: "POST",
             headers: {
@@ -204,6 +210,8 @@ export default function AuthPage() {
     }
 
     const login = () => {
+        if (loading) return;
+
         const username = (document.getElementById("loginUser") as HTMLInputElement).value;
         const password = (document.getElementById("loginPassword") as HTMLInputElement).value;
 
@@ -219,6 +227,8 @@ export default function AuthPage() {
         if (!validateUsernamePasword(username, password)) {
             return;
         }
+
+        setLoading(true);
 
         fetch(api.buildUrl(api.login), {
             method: "POST",
@@ -265,8 +275,8 @@ export default function AuthPage() {
             <div className="wrapper">
                 <div className="form-container">
                     <div className="slide-controls">
-                        <input type="radio" name="slide" id="login" checked={loginChecked} />
-                        <input type="radio" name="slide" id="signup" checked={signupChecked} />
+                        <input type="radio" name="slide" id="login" checked={loginChecked} disabled={loading} />
+                        <input type="radio" name="slide" id="signup" checked={signupChecked} disabled={loading} />
                         <label className="slide login" onClick={handleLoginClick}>Login</label>
                         <label className="slide signup" onClick={handleSignupClick}>Signup</label>
                         <div className="slider-tab"></div>
@@ -274,17 +284,22 @@ export default function AuthPage() {
                     <div className="form-inner">
                         <div className="form login" style={{ marginLeft: marginLeft }}>
                             <div className="field">
-                                <input id="loginUser" type="text" placeholder="Username" />
+                                <input id="loginUser" type="text" placeholder="Username" disabled={loading} />
                             </div>
                             <div className="field">
                                 <input id="loginPassword" type={loginShowPassword ? "text" : "password"}
-                                    placeholder="Password" />
+                                    placeholder="Password" disabled={loading} />
                             </div>
                             <label className="show-pass">
                                 <input className="form-check-input" type="checkbox" onClick={handleShowPassword} />
                                 <span className="checkbox-label">Show password</span>
                             </label>
-                            <div className="field btn" onClick={login}>
+                            <div className="field btn horizontal" onClick={login}>
+                                {loading &&
+                                    <Spinner
+                                        className="loading-spinner"
+                                        size="lg">Submitting...</Spinner>
+                                }
                                 <input type="submit" value="Login" />
                             </div>
                         </div>
@@ -292,25 +307,32 @@ export default function AuthPage() {
                             <div className="field horizontal">
                                 <input id="firstName" type="text" placeholder="First name" style={{
                                     marginRight: "5px"
-                                }} />
+                                }} disabled={loading} />
                                 <input id="lastName" type="text" placeholder="Last name" style={{
                                     marginLeft: "5px"
-                                }} />
+                                }} disabled={loading} />
                             </div>
                             <div className="field">
-                                <input id="signupUsername" type="text" placeholder="Username" />
+                                <input id="signupUsername" type="text" placeholder="Username" disabled={loading} />
                             </div>
                             <div className="field">
-                                <input id="signupPassword" type={signupShowPassword ? "text" : "password"} placeholder="Password" />
+                                <input id="signupPassword" type={signupShowPassword ? "text" : "password"}
+                                    placeholder="Password" disabled={loading} />
                             </div>
                             <div className="field">
-                                <input id="signupConfirmPassword" type={signupShowPassword ? "text" : "password"} placeholder="Confirm password" />
+                                <input id="signupConfirmPassword" type={signupShowPassword ? "text" : "password"}
+                                    placeholder="Confirm password" disabled={loading} />
                             </div>
                             <label className="show-pass">
                                 <input className="form-check-input" type="checkbox" onClick={handleShowPassword} />
                                 <span className="checkbox-label">Show password</span>
                             </label>
-                            <div className="field btn" onClick={signup}>
+                            <div className="field btn horizontal" onClick={signup}>
+                                {loading &&
+                                    <Spinner
+                                        className="loading-spinner"
+                                        size="lg">Submitting...</Spinner>
+                                }
                                 <input type="submit" value="Signup" />
                             </div>
                         </div>
