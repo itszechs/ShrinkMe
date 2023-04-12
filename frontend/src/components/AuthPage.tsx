@@ -105,7 +105,6 @@ export default function AuthPage() {
     };
 
     const validateUsernamePasword = (username: string, password: string) => {
-        console.log(username.length)
         if (username.length < 5 || username.includes(" ")) {
             setAlertModalProps({
                 title: "Invalid form",
