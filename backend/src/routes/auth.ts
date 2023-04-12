@@ -48,7 +48,12 @@ authRouter.post("/signup", async (req: Request, res: Response) => {
         );
 
         if (result.acknowledged) {
-            res.status(201).send({ message: "Account created successfully!" });
+            let userPayload: UserPayload = {
+                id: result.insertedId.toString(),
+                username: account.username
+            }
+            let authToken = generateJwt(userPayload)
+            res.status(201).send({ message: authToken });
         } else {
             res.status(500).send({ message: "Failed to create shorten link" });
         }
