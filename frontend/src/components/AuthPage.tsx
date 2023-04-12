@@ -100,8 +100,9 @@ export default function AuthPage() {
         setAlertModal(!alertModal);
     };
 
-    const validateUsernamePasword = (username: string, password: string) =>   {
-        if (username.length <= 5 || username.includes(" ")) {
+    const validateUsernamePasword = (username: string, password: string) => {
+        console.log(username.length)
+        if (username.length < 5 || username.includes(" ")) {
             setAlertModalProps({
                 title: "Invalid form",
                 message: "Username should be at least 5 characters long and should not contain empty spaces"
@@ -110,7 +111,7 @@ export default function AuthPage() {
             return false;
         }
 
-        if (password.length <= 8 || password.includes(" ")) {
+        if (password.length < 8 || password.includes(" ")) {
             setAlertModalProps({
                 title: "Invalid form",
                 message: "Password should be at least 8 characters long and should not contain empty spaces"
@@ -144,7 +145,7 @@ export default function AuthPage() {
             return;
         }
 
-        if (firstName.length <= 2 || lastName.length <= 2) {
+        if (firstName.length < 2 || lastName.length <= 2) {
             setAlertModalProps({
                 title: "Invalid form",
                 message: "First and last name should be at least 2 characters long"
@@ -156,7 +157,7 @@ export default function AuthPage() {
         if (!validateUsernamePasword(username, password)) {
             return;
         }
-        
+
         if (password !== confirmPassword) {
             setAlertModalProps({
                 title: "Invalid form",
