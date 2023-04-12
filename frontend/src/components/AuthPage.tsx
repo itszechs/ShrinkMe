@@ -100,6 +100,28 @@ export default function AuthPage() {
         setAlertModal(!alertModal);
     };
 
+    const validateUsernamePasword = (username: string, password: string) =>   {
+        if (username.length <= 5 || username.includes(" ")) {
+            setAlertModalProps({
+                title: "Invalid form",
+                message: "Username should be at least 5 characters long and should not contain empty spaces"
+            })
+            setAlertModal(true);
+            return false;
+        }
+
+        if (password.length <= 8 || password.includes(" ")) {
+            setAlertModalProps({
+                title: "Invalid form",
+                message: "Password should be at least 8 characters long and should not contain empty spaces"
+            })
+            setAlertModal(true);
+            return false;
+        }
+        return true;
+    };
+
+
     const signup = () => {
         const firstName = (document.getElementById("firstName") as HTMLInputElement).value;
         const lastName = (document.getElementById("lastName") as HTMLInputElement).value;
@@ -122,6 +144,28 @@ export default function AuthPage() {
             return;
         }
 
+        if (firstName.length <= 2 || lastName.length <= 2) {
+            setAlertModalProps({
+                title: "Invalid form",
+                message: "First and last name should be at least 2 characters long"
+            })
+            setAlertModal(true);
+            return;
+        }
+
+        if (!validateUsernamePasword(username, password)) {
+            return;
+        }
+        
+        if (password !== confirmPassword) {
+            setAlertModalProps({
+                title: "Invalid form",
+                message: "Passwords do not match"
+            })
+            setAlertModal(true);
+            return;
+        }
+
     }
 
     const login = () => {
@@ -136,6 +180,12 @@ export default function AuthPage() {
             setAlertModal(true);
             return;
         }
+
+        if (!validateUsernamePasword(username, password)) {
+            return;
+        }
+
+        console.log("can login")
 
     }
 
