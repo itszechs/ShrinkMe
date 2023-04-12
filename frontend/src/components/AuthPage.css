@@ -208,6 +208,34 @@ input[type="radio"] {
     cursor: pointer;
 }
 
+.alert-btn-container {
+    border-radius: 48px;
+}
+
+.alert-btn {
+    z-index: 1;
+    position: relative;
+    background: none;
+    border: none;
+    color: #f9fafc;
+    border-radius: 24px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    padding: 4px 8px 4px 8px;
+}
+
+.modal-title {
+    color: #f9fafc;
+    font-size: 28px;
+    font-weight: 600;
+}
+
+
+.modal-body {
+    font-size: 20px;
+}
+
 .checkbox-label {
     margin-left: 6px;
 }
@@ -220,4 +248,15 @@ input[type="radio"] {
 .form-check-input:checked {
     background-color: #7E57C2;
     border-color: #7E57C2;
+}
+
+.modal-content {
+    border-radius: 16px;
+    background-color: #121212;
+    color: #f9fafc;
+}
+
+.btn-close {
+    /* tint svg image */
+    filter: invert(100%);
 }

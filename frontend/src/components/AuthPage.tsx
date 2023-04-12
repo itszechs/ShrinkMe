@@ -1,6 +1,12 @@
 import { useEffect, useRef, useState } from "react";
+import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 import "./AuthPage.css";
+
+export interface AlertModalProps {
+    title: string,
+    message: string
+}
 
 enum FormState {
     LOGIN,
@@ -15,6 +21,13 @@ export default function AuthPage() {
     const [signupHeight, setSignupHeight] = useState<string>("0%");
     const [loginChecked, setLoginChecked] = useState<boolean>(true);
     const [signupChecked, setSignupChecked] = useState<boolean>(false);
+    const [alertModal, setAlertModal] = useState<boolean>(false);
+
+    const [alertModalProps, setAlertModalProps] = useState<AlertModalProps>({
+        title: "",
+        message: ""
+    });
+
     const heightJob = useRef<any | null>(null);
 
     useEffect(() => {
@@ -83,8 +96,60 @@ export default function AuthPage() {
         }
     };
 
+    const toggle = () => {
+        setAlertModal(!alertModal);
+    };
+
+    const signup = () => {
+        const firstName = (document.getElementById("firstName") as HTMLInputElement).value;
+        const lastName = (document.getElementById("lastName") as HTMLInputElement).value;
+        const username = (document.getElementById("signupUsername") as HTMLInputElement).value;
+        const password = (document.getElementById("signupPassword") as HTMLInputElement).value;
+        const confirmPassword = (document.getElementById("signupConfirmPassword") as HTMLInputElement).value;
+
+        if (
+            firstName.length === 0
+            || lastName.length === 0
+            || username.length === 0
+            || password.length === 0
+            || confirmPassword.length === 0
+        ) {
+            setAlertModalProps({
+                title: "Invalid form",
+                message: "Please fill in all fields"
+            })
+            setAlertModal(true);
+            return;
+        }
+
+    }
+
+    const login = () => {
+        const username = (document.getElementById("loginUser") as HTMLInputElement).value;
+        const password = (document.getElementById("loginPassword") as HTMLInputElement).value;
+
+        if (username.length === 0 || password.length === 0) {
+            setAlertModalProps({
+                title: "Invalid form",
+                message: "Please fill in all fields"
+            })
+            setAlertModal(true);
+            return;
+        }
+
+    }
+
     return (
         <div className="auth-page">
+            <Modal isOpen={alertModal} toggle={toggle} centered>
+                <ModalHeader toggle={toggle}>{alertModalProps.title}</ModalHeader>
+                <ModalBody>{alertModalProps.message}</ModalBody>
+                <ModalFooter>
+                    <div className="field btn alert-btn-container " onClick={toggle} >
+                        <input className="alert-btn" type="submit" value="Close" />
+                    </div>
+                </ModalFooter>
+            </Modal>
             <div className="wrapper">
                 <div className="form-container">
                     <div className="slide-controls">
@@ -97,43 +162,43 @@ export default function AuthPage() {
                     <div className="form-inner">
                         <div className="form login" style={{ marginLeft: marginLeft }}>
                             <div className="field">
-                                <input type="text" placeholder="Username" />
+                                <input id="loginUser" type="text" placeholder="Username" />
                             </div>
                             <div className="field">
-                                <input type={loginShowPassword ? "text" : "password"}
+                                <input id="loginPassword" type={loginShowPassword ? "text" : "password"}
                                     placeholder="Password" />
                             </div>
                             <label className="show-pass">
                                 <input className="form-check-input" type="checkbox" onClick={handleShowPassword} />
                                 <span className="checkbox-label">Show password</span>
                             </label>
-                            <div className="field btn">
+                            <div className="field btn" onClick={login}>
                                 <input type="submit" value="Login" />
                             </div>
                         </div>
                         <div className="form signup" style={{ height: signupHeight }}>
                             <div className="field horizontal">
-                                <input type="text" placeholder="First name" style={{
+                                <input id="firstName" type="text" placeholder="First name" style={{
                                     marginRight: "5px"
                                 }} />
-                                <input type="text" placeholder="Last name" style={{
+                                <input id="lastName" type="text" placeholder="Last name" style={{
                                     marginLeft: "5px"
                                 }} />
                             </div>
                             <div className="field">
-                                <input type="text" placeholder="Username" />
+                                <input id="signupUsername" type="text" placeholder="Username" />
                             </div>
                             <div className="field">
-                                <input type={signupShowPassword ? "text" : "password"} placeholder="Password" />
+                                <input id="signupPassword" type={signupShowPassword ? "text" : "password"} placeholder="Password" />
                             </div>
                             <div className="field">
-                                <input type={signupShowPassword ? "text" : "password"} placeholder="Confirm password" />
+                                <input id="signupConfirmPassword" type={signupShowPassword ? "text" : "password"} placeholder="Confirm password" />
                             </div>
                             <label className="show-pass">
                                 <input className="form-check-input" type="checkbox" onClick={handleShowPassword} />
                                 <span className="checkbox-label">Show password</span>
                             </label>
-                            <div className="field btn">
+                            <div className="field btn" onClick={signup}>
                                 <input type="submit" value="Signup" />
                             </div>
                         </div>
