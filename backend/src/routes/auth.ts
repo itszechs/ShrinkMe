@@ -1,7 +1,7 @@
 import express, { Request, Response, Router } from "express";
 import { hashPassword } from "../utils/hash-password";
 import { collections } from "../services/database";
-import { accountSchema } from "../models/Account";
+import { accountSchema, loginSchema } from "../models/Account";
 import { Account } from "../models/Account";
 import { UserPayload, generateJwt } from "../utils/jwt-provider";
 
@@ -40,13 +40,20 @@ authRouter.post("/signup", async (req: Request, res: Response) => {
 
         const result = await collections.accounts.insertOne(
             {
+                firstName: account.firstName,
+                lastName: account.lastName,
                 username: account.username,
                 password: hashedPassword
             }
         );
 
         if (result.acknowledged) {
-            res.status(201).send({ message: "Account created successfully!" });
+            let userPayload: UserPayload = {
+                id: result.insertedId.toString(),
+                username: account.username
+            }
+            let authToken = generateJwt(userPayload)
+            res.status(201).send({ message: authToken });
         } else {
             res.status(500).send({ message: "Failed to create shorten link" });
         }
@@ -66,7 +73,7 @@ authRouter.post("/signup", async (req: Request, res: Response) => {
 */
 authRouter.post("/login", async (req: Request, res: Response) => {
     try {
-        const { error } = accountSchema.validate(req.body);
+        const { error } = loginSchema.validate(req.body);
         if (error) {
             res.status(400).send({ message: "Invalid account body" });
             return;
