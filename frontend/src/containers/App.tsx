@@ -6,6 +6,7 @@ import ErrorPage from '../components/ErrorPage';
 import NavBar from '../components/NavBar';
 import AuthPage from '../components/AuthPage';
 import { api } from '../utils/constants';
+import DashPage from '../components/DashPage';
 
 export const AuthContext = createContext({
   isLoggedIn: false,
@@ -45,6 +46,7 @@ export default function App() {
               <HomePage /></>
           } />
           <Route path="/auth" element={isLoggedIn ? <Navigate to="/" replace /> : <AuthPage />} />
+          <Route path="/dashboard" element={isLoggedIn ? <DashPage /> : <Navigate to="/" replace />} />
           <Route path="/not-found" element={<ErrorPage />} />
           <Route path="*" element={<ErrorPage />} />
         </Routes>
