@@ -4,9 +4,23 @@ import { collections } from "../services/database";
 import { accountSchema, loginSchema } from "../models/Account";
 import { Account } from "../models/Account";
 import { UserPayload, generateJwt } from "../utils/jwt-provider";
+import { validateHeader } from "../utils/validate-headers";
 
 export const authRouter = Router();
 authRouter.use(express.json());
+
+/*
+    * POST /token
+    * Check if token is valid or not
+*/
+authRouter.post("/token", [validateHeader], async (_: Request, res: Response) => {
+    try {
+        res.status(200).send({ message: "Token is valid" });
+    } catch (error) {
+        res.status(500).send({ error: error.message });
+    }
+});
+
 
 /*
     * POST /signup
