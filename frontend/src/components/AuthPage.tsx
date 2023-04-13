@@ -150,7 +150,7 @@ export default function AuthPage() {
             return;
         }
 
-        if (firstName.length < 2 || lastName.length <= 2) {
+        if (firstName.length < 2 || lastName.length < 2) {
             setAlertModalProps({
                 title: "Invalid form",
                 message: "First and last name should be at least 2 characters long"
