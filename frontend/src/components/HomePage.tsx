@@ -1,12 +1,14 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { Input, InputGroup, Button, Fade } from 'reactstrap';
 import copyIcon from ".././images/icon-copy.svg";
 import LoadingBar from "./LoadingBar";
 import { api } from "../utils/constants";
 import "./HomePage.css";
+import { AuthContext } from '../containers/App';
 
 
 export default function HomePage() {
+    const { isLoggedIn } = useContext(AuthContext);
 
     const [query, setQuery] = useState<string>("");
     const [output, setOutput] = useState<string>("Your shortened link will appear here");
@@ -20,7 +22,10 @@ export default function HomePage() {
         setLoading(true);
         fetch(`${api.base}${api.links}`, {
             method: "POST",
-            headers: {
+            headers: isLoggedIn ? {
+                "Content-type": "application/json",
+                "Authorization": `Bearer ${localStorage.getItem("token")}`
+            } : {
                 "Content-type": "application/json"
             },
             body: JSON.stringify({
