@@ -5,6 +5,7 @@ interface Props {
     id: string,
     title: string;
     subtitle: string;
+    onCopy: (shortenId: string) => void;
     onShorten: (shortenId: string) => void;
     onEdit: (id: string, originalUrl: string, shortenId: string) => void;
     onDelete: (linkId: string) => void;
@@ -12,7 +13,11 @@ interface Props {
 
 export default function LinkCard(props: Props) {
     return (
-        <Card className="link-card">
+        <Card
+            className="link-card"
+            onClick={() => {
+                props.onCopy(props.subtitle)
+            }}>
             <CardBody>
                 <div className="d-flex align-items-center">
                     <div className="text-truncate">

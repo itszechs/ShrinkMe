@@ -25,6 +25,12 @@ export default function DashPage() {
             window.location.href = "/";
         }
 
+        toast.info(
+            "Click on card to copy link to clipboard!", {
+            position: "top-right",
+            autoClose: 3000,
+        });
+
         setLoading(true);
 
         fetch(api.buildUrl(api.links), {
@@ -206,7 +212,11 @@ export default function DashPage() {
         });
     }
 
-
+    const copyLink = (shortenId: string) => {
+        let shortenLink = `${api.base}/${shortenId}`;
+        navigator.clipboard.writeText(shortenLink);
+        toast.info("Copied to clipboard!");
+    };
 
     return (
         <div className="dash-page">
@@ -272,6 +282,7 @@ export default function DashPage() {
                                 id={link._id}
                                 title={link.originalUrl}
                                 subtitle={link.shortenUrl}
+                                onCopy={(shortenId) => copyLink(shortenId)}
                                 onShorten={(shortenId) => openShortenLink(shortenId)}
                                 onEdit={(id, original, shortenId) => {
                                     openLinkEditor(id, original, shortenId);
