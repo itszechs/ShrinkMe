@@ -11,6 +11,7 @@ export default function HomePage() {
     const { isLoggedIn } = useContext(AuthContext);
 
     const [query, setQuery] = useState<string>("");
+    const [custom, setCustom] = useState<string>("");
     const [output, setOutput] = useState<string>("Your shortened link will appear here");
     const [loading, setLoading] = useState<boolean>(false);
 
@@ -28,9 +29,14 @@ export default function HomePage() {
             } : {
                 "Content-type": "application/json"
             },
-            body: JSON.stringify({
-                "originalUrl": query
-            })
+            body: JSON.stringify(
+                isLoggedIn && custom !== "" ? {
+                    "originalUrl": query,
+                    "shortenUrl": custom
+                } : {
+                    "originalUrl": query
+                }
+            )
         }).then(res => {
             if (res.ok) {
                 return res.json();
@@ -72,6 +78,23 @@ export default function HomePage() {
                     Shorten
                 </Button>
             </InputGroup>
+            {isLoggedIn &&
+                <div className="custom-section">
+                    <InputGroup className="custom-input-group">
+                        <Input
+                            className="form-control input-field custom-field"
+                            placeholder="Custom shorten link"
+                            onKeyDown={e => {
+                                if (e.key === "Enter") {
+                                    generateLink()
+                                }
+                            }}
+                            onChange={e => setCustom(e.target.value)}
+                            value={custom} />
+                    </InputGroup>
+                </div>
+            }
+
             <div className="output-section">
                 {(loading) ? (<LoadingBar />) : (
                     <Fade tag="div">

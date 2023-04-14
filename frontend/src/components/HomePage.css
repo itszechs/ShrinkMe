@@ -109,3 +109,24 @@
         font-size: 24px;
     }
 }
+
+.custom-input-group {
+    width: 35vw;
+    margin-left: 24px;
+    margin-right: 24px;
+    height: 6vh;
+}
+
+@media (max-width: 850px) {
+    .custom-input-group {
+        width: 60vw;
+    }
+}
+
+.custom-section {
+    margin-top: 12px;
+}
+
+.custom-field {
+    border-radius: 12px;
+}
