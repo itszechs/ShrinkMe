@@ -103,6 +103,12 @@ export default function DashPage() {
 
     }
 
+    const openShortenLink = (shortenId: string) => {
+        let shortenLink = `${api.base}/${shortenId}`;
+        console.log(shortenLink);
+        window.open(shortenLink, "_blank");
+    };
+
     return (
         <div className="dash-page">
             <ToastContainer
@@ -124,6 +130,7 @@ export default function DashPage() {
                                 id={link._id}
                                 title={link.originalUrl}
                                 subtitle={link.shortenUrl}
+                                onShorten={(shortenId) => openShortenLink(shortenId)}
                                 onDelete={(id) => {
                                     deleteLink(id);
                                 }}
