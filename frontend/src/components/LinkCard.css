@@ -1,0 +1,56 @@
+.link-card {
+    color: #f9fafc;
+    background-color: #202020;
+    border-radius: 16px;
+}
+
+.link-card:hover {
+    background-color: #303030;
+}
+
+.btn-icon {
+    background: none;
+    border: none;
+    color: #1b1b1b;
+    margin: 8px;
+    border-radius: 72px;
+}
+
+.btn-green {
+    background-color: #66BB6A;
+}
+
+.btn-green:hover,
+.btn-green:active,
+.btn-green:focus {
+    background-color: #64FFDA;
+}
+
+.btn-red {
+    background-color: #D32F2F;
+}
+
+.btn-red:hover,
+.btn-red:active,
+.btn-red:focus {
+    background-color: #FF5252;
+}
+
+.shorten-link {
+    color: #929ca6;
+    width: max-content;
+    background-color: #252525;
+    padding-top: 4px;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-bottom: 4px;
+    border-radius: 12px;
+}
+
+.shorten-link:hover {
+    color: #929ca6;
+    width: max-content;
+    background-color: black;
+    border-radius: 24px;
+    transition: all 0.5s ease-in-out;
+}
