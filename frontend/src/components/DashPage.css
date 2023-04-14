@@ -42,3 +42,9 @@
         grid-template-rows: repeat(1, 1fr);
     }
 }
+
+
+.no-background {
+    background: none;
+    border: none;
+}

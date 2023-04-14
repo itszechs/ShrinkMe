@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react"
 import { AuthContext } from "../containers/App"
-import { Fade, Spinner } from "reactstrap";
+import { Fade, Spinner, Modal, ModalHeader, ModalBody, ModalFooter, FormGroup, Label, Input } from 'reactstrap';
 import { api } from "../utils/constants";
 import { ToastContainer, toast } from 'react-toastify';
 
@@ -109,6 +109,105 @@ export default function DashPage() {
         window.open(shortenLink, "_blank");
     };
 
+    const openLinkEditor = (id: string, original: string, shortenId: string) => {
+        setEditorId(id);
+        setEditorOriginal(original);
+        setEditorShorten(shortenId);
+        setModal(true);
+    }
+
+    const [modal, setModal] = useState(false);
+
+    const toggle = () => setModal(!modal);
+    const [editorId, setEditorId] = useState<string>("");
+    const [editorOriginal, setEditorOriginal] = useState<string>("");
+    const [editorShorten, setEditorShorten] = useState<string>("");
+
+    useEffect(() => {
+        // clear inputs when dismissed
+        if (!modal) {
+            setEditorId("");
+            setEditorOriginal("");
+            setEditorShorten("");
+        }
+    }, [modal]);
+
+    const updateLink = () => {
+        const id = toast.loading("Updating link...");
+        const linkId = editorId;
+        const linkOriginal = editorOriginal;
+        const regex = /[A-Z]/g;
+        if (regex.test(editorShorten)) {
+            toast.info("Link converted to lowercase!")
+        }
+        const newShorten = editorShorten.toLowerCase();
+
+        setModal(false);
+        fetch(`${api.buildUrl(api.links)}/${linkId}`, {
+            method: "PUT",
+            headers: {
+                "Content-type": "application/json",
+                "Authorization": `Bearer ${localStorage.getItem("token")}`
+            },
+            body: JSON.stringify({
+                originalUrl: linkOriginal,
+                shortenUrl: newShorten
+            })
+        }).then(res => {
+            if (res.ok) {
+                return res.json();
+            }
+            return Promise.reject(res);
+        }).then((_) => {
+            //update the link in the state
+            let _links = links.map(link => {
+                if (link._id === linkId) {
+                    return {
+                        "_id": linkId,
+                        "shortenUrl": newShorten,
+                        "originalUrl": linkOriginal
+                    }
+                }
+                return link;
+            });
+            setLinks(_links);
+            toast.update(id,
+                {
+                    render: "Link updated successfully!",
+                    type: "success",
+                    isLoading: false,
+                }
+            );
+        }).catch(err => {
+            try {
+                err.json().then((res: any) => {
+                    const message = res.message;
+                    toast.update(id,
+                        {
+                            render: message,
+                            type: "error",
+                            isLoading: false,
+                        }
+                    );
+                });
+            } catch (e) {
+                toast.update(id,
+                    {
+                        render: "Unable to update the link!",
+                        type: "error",
+                        isLoading: false,
+                    }
+                );
+            }
+        }).finally(() => {
+            setTimeout(() => {
+                toast.dismiss(id);
+            }, 5000);
+        });
+    }
+
+
+
     return (
         <div className="dash-page">
             <ToastContainer
@@ -116,6 +215,49 @@ export default function DashPage() {
                 newestOnTop
                 theme="colored"
             />
+            <Modal isOpen={modal} toggle={toggle} centered>
+                <ModalHeader toggle={toggle}>Link Editor</ModalHeader>
+                <ModalBody>
+                    <FormGroup>
+                        <Label>Original link</Label>
+                        <Input
+                            type="text"
+                            value={editorOriginal}
+                            onChange={e => setEditorOriginal(e.target.value)}
+                            disabled
+                            style={{
+                                cursor: "not-allowed",
+                                borderRadius: "8px"
+                            }} />
+                    </FormGroup>
+                    <FormGroup>
+                        <Label>Shorten link</Label>
+                        <Input
+                            type="text"
+                            value={editorShorten}
+                            onChange={e => setEditorShorten(e.target.value)}
+                            style={{
+                                borderRadius: "8px"
+                            }} />
+                    </FormGroup>
+                </ModalBody>
+                <ModalFooter>
+                    <div className="field btn horizontal btn-green"
+                        onClick={updateLink}
+                        style={{
+                            borderRadius: "12px"
+                        }} >
+                        <input className="no-background" type="submit" value="Save" />
+                    </div>
+                    <div className="field btn horizontal btn-red"
+                        onClick={toggle}
+                        style={{
+                            borderRadius: "12px"
+                        }}>
+                        <input className="no-background" type="submit" value="Cancel" />
+                    </div>
+                </ModalFooter>
+            </Modal>
             <div className="heading dash-heading">
                 <span className="tagline">Your Dashboard: Manage Your Shortened URLs</span>
                 <span className="tagline sub">Edit or delete your links anytime from your dashboard</span>
@@ -131,6 +273,9 @@ export default function DashPage() {
                                 title={link.originalUrl}
                                 subtitle={link.shortenUrl}
                                 onShorten={(shortenId) => openShortenLink(shortenId)}
+                                onEdit={(id, original, shortenId) => {
+                                    openLinkEditor(id, original, shortenId);
+                                }}
                                 onDelete={(id) => {
                                     deleteLink(id);
                                 }}

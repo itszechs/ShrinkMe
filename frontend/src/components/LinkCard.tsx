@@ -6,6 +6,7 @@ interface Props {
     title: string;
     subtitle: string;
     onShorten: (shortenId: string) => void;
+    onEdit: (id: string, originalUrl: string, shortenId: string) => void;
     onDelete: (linkId: string) => void;
 }
 
@@ -32,7 +33,12 @@ export default function LinkCard(props: Props) {
                             alignItems: "flex-end",
                             justifyContent: "center",
                         }}>
-                        <Button color="success" className="btn-icon btn-green" >
+                        <Button
+                            color="success"
+                            className="btn-icon btn-green"
+                            onClick={() => {
+                                props.onEdit(props.id, props.title, props.subtitle)
+                            }}>
                             <i className="bi bi-pencil-fill"></i>
                         </Button>
                         <Button color="danger"
