@@ -25,7 +25,10 @@ export default function LinkCard(props: Props) {
                         <CardText
                             ctag="h6"
                             className="mb-2 text-truncate shorten-link"
-                            onClick={() => { props.onShorten(props.subtitle) }}>
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                props.onShorten(props.subtitle)
+                            }}>
                             {props.subtitle}
                             <i className="bi bi-box-arrow-up-right" style={{ marginLeft: "8px" }}></i>
                         </CardText>
