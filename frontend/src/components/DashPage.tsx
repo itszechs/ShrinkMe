@@ -10,7 +10,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import "./DashPage.css"
 
 interface UserLink {
-    id: string,
+    _id: string
     shortenUrl: string,
     originalUrl: string,
 }
@@ -63,6 +63,46 @@ export default function DashPage() {
 
     }, [isLoggedIn]);
 
+    const deleteLink = (linkId: string) => {
+        const id = toast.loading("Deleting link...");
+        fetch(`${api.buildUrl(api.links)}/${linkId}`, {
+            method: "DELETE",
+            headers: {
+                "Content-type": "application/json",
+                "Authorization": `Bearer ${localStorage.getItem("token")}`
+            }
+        }).then(res => {
+            if (res.status === 202) {
+                return res.json();
+            }
+            return Promise.reject(res);
+        }).then(() => {
+            //delete the link from the state
+            let _links = links.filter(link => link._id !== linkId);
+            setLinks(_links);
+            toast.update(id,
+                {
+                    render: "Link deleted successfully!",
+                    type: "success",
+                    isLoading: false,
+                }
+            );
+        }).catch(_ => {
+            toast.update(id,
+                {
+                    render: "Unable to delete the link!",
+                    type: "error",
+                    isLoading: false,
+                }
+            );
+        }).finally(() => {
+            setTimeout(() => {
+                toast.dismiss(id);
+            }, 5000);
+        });
+
+    }
+
     return (
         <div className="dash-page">
             <ToastContainer
@@ -81,8 +121,12 @@ export default function DashPage() {
                     <div className="links-grid">
                         {links.map((link, index) => (
                             <LinkCard key={index}
+                                id={link._id}
                                 title={link.originalUrl}
                                 subtitle={link.shortenUrl}
+                                onDelete={(id) => {
+                                    deleteLink(id);
+                                }}
                             />
                         ))}
                     </div>

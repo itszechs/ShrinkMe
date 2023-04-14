@@ -2,8 +2,10 @@ import { Card, CardText, CardBody, Button } from 'reactstrap';
 import './LinkCard.css';
 
 interface Props {
+    id: string,
     title: string;
     subtitle: string;
+    onDelete: (linkId: string) => void;
 }
 
 export default function LinkCard(props: Props) {
@@ -29,7 +31,11 @@ export default function LinkCard(props: Props) {
                         <Button color="success" className="btn-icon btn-green" >
                             <i className="bi bi-pencil-fill"></i>
                         </Button>
-                        <Button color="danger" className="btn-icon btn-red mt-1">
+                        <Button color="danger"
+                            className="btn-icon btn-red mt-1"
+                            onClick={() => {
+                                props.onDelete(props.id)
+                            }}>
                             <i className="bi bi-trash-fill"></i>
                         </Button>
                     </div>
