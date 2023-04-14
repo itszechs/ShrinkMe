@@ -41,14 +41,16 @@ export default function LinkCard(props: Props) {
                         <Button
                             color="success"
                             className="btn-icon btn-green"
-                            onClick={() => {
+                            onClick={(e) => {
+                                e.stopPropagation();
                                 props.onEdit(props.id, props.title, props.subtitle)
                             }}>
                             <i className="bi bi-pencil-fill"></i>
                         </Button>
                         <Button color="danger"
                             className="btn-icon btn-red mt-1"
-                            onClick={() => {
+                            onClick={(e) => {
+                                e.stopPropagation();
                                 props.onDelete(props.id)
                             }}>
                             <i className="bi bi-trash-fill"></i>
