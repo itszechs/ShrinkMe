@@ -9,7 +9,15 @@
 
 .input-group {
     width: 55vw;
+    margin-left: 24px;
+    margin-right: 24px;
     height: 7vh;
+}
+
+@media (max-width: 850px) {
+    .input-group {
+        width: 90vw;
+    }
 }
 
 .input-field {
@@ -87,10 +95,17 @@
 
 .tagline {
     font-size: 32px;
-    margin: 0;
+    margin-left: 24px;
+    margin-right: 24px;
 }
 
 .sub {
     font-size: 16px;
     color: #909090;
+}
+
+@media (max-width: 450px) {
+    .tagline {
+        font-size: 24px;
+    }
 }
