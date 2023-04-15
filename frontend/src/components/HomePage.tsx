@@ -5,6 +5,7 @@ import LoadingBar from "./LoadingBar";
 import { api } from "../utils/constants";
 import "./HomePage.css";
 import { AuthContext } from '../containers/App';
+import { ToastContainer, toast } from 'react-toastify';
 
 
 export default function HomePage() {
@@ -58,11 +59,19 @@ export default function HomePage() {
     }
 
     const copyOutput = () => {
-        navigator.clipboard.writeText(output);
+        if (output.startsWith(api.base)) {
+            navigator.clipboard.writeText(output);
+            toast.info("Copied to clipboard!");
+        }
     };
 
     return (
         <div className="home-page">
+            <ToastContainer
+                position="bottom-left"
+                newestOnTop
+                theme="colored"
+            />
             <div className="heading">
                 <span className="tagline">ShrinkMe - Shorten your links, expand your reach!</span>
                 <span className="tagline sub">Shorten, simplify and track your links with ease!</span>
