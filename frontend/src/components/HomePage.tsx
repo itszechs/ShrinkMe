@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Input, InputGroup, Button, Fade } from 'reactstrap';
 import copyIcon from ".././images/icon-copy.svg";
 import LoadingBar from "./LoadingBar";
@@ -14,6 +14,10 @@ export default function HomePage() {
     const [custom, setCustom] = useState<string>("");
     const [output, setOutput] = useState<string>("Your shortened link will appear here");
     const [loading, setLoading] = useState<boolean>(false);
+
+    useEffect(() => {
+        setCustom(custom.replace(/\s/g, "_"));
+    }, [custom]);
 
     const generateLink = () => {
         if (query === "") {
